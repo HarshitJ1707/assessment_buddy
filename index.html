@@ -1,0 +1,1214 @@
+!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assessment Buddy • Topic Diagnostics</title>
+  <style>
+    :root, [data-theme="light"] {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --primary-soft: #eef2ff;
+      --secondary: #06b6d4;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --code-bg: #1e293b;
+      --code-text: #f8fafc;
+      --opt-hover: #fdfefe;
+      --ad-bg: #f1f5f9;
+      --metric-bg: #f8fafc;
+      --diag-bg: #f1f5f9;
+    }
+
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-dark: #6366f1;
+      --primary-soft: #1e1b4b;
+      --secondary: #22d3ee;
+      --accent: #fbbf24;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #34d399;
+      --danger: #f87171;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+      --nav-bg: rgba(15, 23, 42, 0.95);
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --opt-hover: #273549;
+      --ad-bg: #1e293b;
+      --metric-bg: #0f172a;
+      --diag-bg: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* Ad slots */
+    .ad-slot {
+      background: var(--ad-bg);
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .ad-top-banner { width: 100%; height: 48px; }
+    .ad-hero {
+      width: 100%;
+      max-width: 728px;
+      height: 90px;
+      margin: 2rem auto 0;
+      border-radius: var(--radius);
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: var(--nav-bg);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      box-shadow: var(--shadow);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a, .nav-links button.nav-link-btn {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    .nav-links a:hover, .nav-links a.active,
+    .nav-links button.nav-link-btn:hover {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* Specialization dropdown */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .dropdown-toggle:hover,
+    .dropdown.open .dropdown-toggle {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .dropdown-toggle .chevron {
+      font-size: 0.65rem;
+      transition: transform 0.2s;
+    }
+    .dropdown.open .chevron { transform: rotate(180deg); }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 200px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 0.4rem;
+      z-index: 200;
+      animation: dropIn 0.15s ease-out;
+    }
+    .dropdown.open .dropdown-menu { display: block; }
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-menu button {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      width: 100%;
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border: none;
+      background: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .dropdown-menu button:hover {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .dropdown-menu button.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .dropdown-menu .item-icon { font-size: 1.1rem; }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-size: 1.1rem;
+    }
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .hero h1 { font-size: 2rem; margin-bottom: 0.75rem; }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto 1.5rem;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn:active { transform: scale(0.98); }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary-soft); }
+
+    /* Interactive home stream cards */
+    .stream-section {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .stream-section h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .stream-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.9rem;
+    }
+    .stream-card {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .stream-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .stream-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.12);
+    }
+    .stream-card:hover::before { opacity: 0.06; }
+    .stream-card:active { transform: scale(0.98); }
+    .stream-card .s-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .stream-card:hover .s-icon { transform: scale(1.12); }
+    .stream-card .s-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .stream-card .s-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .stream-card .s-cta {
+      margin-top: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.2s;
+    }
+    .stream-card:hover .s-cta {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Quick tip chips */
+    .tip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .tip-chip {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .tip-chip:hover { border-color: var(--primary); }
+
+    /* Quiz card */
+    .quiz-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .timer {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .q-step {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .q-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .q-title { font-size: 1.2rem; margin-bottom: 1rem; }
+
+    .code-block {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .code-keyword { color: #f43f5e; font-weight: bold; }
+    .code-fn { color: #38bdf8; }
+    .code-lit { color: #fbbf24; }
+
+    .diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0 1.5rem;
+      padding: 1rem;
+      background: var(--diag-bg);
+      border-radius: 8px;
+      flex-wrap: wrap;
+    }
+    .diag-box {
+      border: 2px solid var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      background: var(--surface);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .options-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .opt-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--opt-hover);
+    }
+    .opt-btn.correct {
+      background: #dcfce7;
+      border-color: var(--success);
+      color: #065f46;
+      font-weight: 600;
+    }
+    .opt-btn.incorrect {
+      background: #fee2e2;
+      border-color: var(--danger);
+      color: #991b1b;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .opt-btn.correct {
+      background: #064e3b;
+      color: #a7f3d0;
+    }
+    [data-theme="dark"] .opt-btn.incorrect {
+      background: #7f1d1d;
+      color: #fecaca;
+    }
+
+    .card-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .metric-panel {
+      background: var(--metric-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .metric-panel h3 {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .metric-panel p {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .breakdown-row.is-correct { border-left: 4px solid var(--success); }
+    .breakdown-row.is-wrong { border-left: 4px solid var(--danger); }
+
+    @media (max-width: 720px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        align-items: stretch;
+      }
+      .nav-links.open { display: flex; }
+      .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        padding: 0.25rem 0 0.25rem 0.5rem;
+        min-width: 0;
+      }
+      .dropdown.open .dropdown-menu { display: block; }
+      .card-metrics { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+      .stream-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .stream-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="ad-slot ad-top-banner" aria-label="Advertisement Banner">
+    <span>Sponsored • Campus Book Store 15% Off Orientation Deal</span>
+  </aside>
+
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#home" class="brand" onclick="navigateTo('home'); return false;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+        <span>Assessment Buddy</span>
+      </a>
+
+      <div class="nav-right">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+        <nav>
+          <ul class="nav-links" id="navLinks">
+            <li><a href="#home" onclick="navigateTo('home'); return false;" class="nav-item active">Home</a></li>
+            <li class="dropdown" id="specDropdown">
+              <button type="button" class="dropdown-toggle" id="specToggle" aria-haspopup="true" aria-expanded="false">
+                Specialization
+                <span class="chevron">▾</span>
+              </button>
+              <div class="dropdown-menu" role="menu">
+                <button type="button" data-topic="commerce" onclick="selectTopic('commerce')">
+                  <span class="item-icon">💼</span> Commerce
+                </button>
+                <button type="button" data-topic="science" onclick="selectTopic('science')">
+                  <span class="item-icon">🔬</span> Science
+                </button>
+                <button type="button" data-topic="engineering" onclick="selectTopic('engineering')">
+                  <span class="item-icon">⚙️</span> Engineering
+                </button>
+                <button type="button" data-topic="btech" onclick="selectTopic('btech')">
+                  <span class="item-icon">🖥️</span> B.Tech / B.E
+                </button>
+                <button type="button" data-topic="humanities" onclick="selectTopic('humanities')">
+                  <span class="item-icon">📚</span> Humanities / Other
+                </button>
+              </div>
+            </li>
+            <li><a href="#scoreboard" onclick="navigateTo('scoreboard'); return false;" class="nav-item">Scoreboard</a></li>
+            <li><a href="#about" onclick="navigateTo('about'); return false;" class="nav-item">About</a></li>
+          </ul>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode" title="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Home -->
+    <section id="view-home" class="view active">
+      <div class="hero">
+        <h1>First-Year Skills Evaluation</h1>
+        <p>Choose your academic stream and take a short diagnostic tailored to that background. Scores stay in this browser only.</p>
+
+        <div class="stream-section">
+          <h2>Pick a specialization to begin</h2>
+          <div class="stream-grid">
+            <div class="stream-card" tabindex="0" role="button" onclick="selectTopic('commerce')" onkeydown="if(event.key==='Enter')selectTopic('commerce')">
+              <span class="s-icon">💼</span>
+              <span class="s-name">Commerce</span>
+              <span class="s-desc">Accounting, business &amp; economics basics</span>
+              <span class="s-cta">Start quiz →</span>
+            </div>
+            <div class="stream-card" tabindex="0" role="button" onclick="selectTopic('science')" onkeydown="if(event.key==='Enter')selectTopic('science')">
+              <span class="s-icon">🔬</span>
+              <span class="s-name">Science</span>
+              <span class="s-desc">Physics, chemistry &amp; biology fundamentals</span>
+              <span class="s-cta">Start quiz →</span>
+            </div>
+            <div class="stream-card" tabindex="0" role="button" onclick="selectTopic('engineering')" onkeydown="if(event.key==='Enter')selectTopic('engineering')">
+              <span class="s-icon">⚙️</span>
+              <span class="s-name">Engineering</span>
+              <span class="s-desc">Core concepts &amp; problem solving</span>
+              <span class="s-cta">Start quiz →</span>
+            </div>
+            <div class="stream-card" tabindex="0" role="button" onclick="selectTopic('btech')" onkeydown="if(event.key==='Enter')selectTopic('btech')">
+              <span class="s-icon">🖥️</span>
+              <span class="s-name">B.Tech / B.E</span>
+              <span class="s-desc">CS, programming &amp; data structures</span>
+              <span class="s-cta">Start quiz →</span>
+            </div>
+            <div class="stream-card" tabindex="0" role="button" onclick="selectTopic('humanities')" onkeydown="if(event.key==='Enter')selectTopic('humanities')">
+              <span class="s-icon">📚</span>
+              <span class="s-name">Humanities / Other</span>
+              <span class="s-desc">Arts, design, law, writing &amp; reasoning</span>
+              <span class="s-cta">Start quiz →</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-row">
+          <span class="tip-chip">⏱ Timed</span>
+          <span class="tip-chip">✓ Instant feedback</span>
+          <span class="tip-chip">📊 Personal scoreboard</span>
+          <span class="tip-chip">🌙 Light / Dark mode</span>
+        </div>
+
+        <aside class="ad-slot ad-hero">
+          <span>Ad Space • Academic Tutoring Services</span>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="view-quizzes" class="view">
+      <div class="quiz-card">
+        <div class="quiz-meta">
+          <div class="badge" id="categoryBadge">
+            <span id="badgeIcon">💻</span>
+            <span id="badgeCategory">General</span>
+          </div>
+          <div class="timer" id="timerDisplay">Time: 00:00</div>
+        </div>
+        <div class="q-step"><div class="q-fill" id="progressBar"></div></div>
+        <h2 class="q-title" id="questionText">Question prompt goes here?</h2>
+        <div id="visualContainer"></div>
+        <div class="options-grid" id="optionsContainer"></div>
+      </div>
+    </section>
+
+    <!-- Scorecard -->
+    <section id="view-scorecard" class="view">
+      <div class="quiz-card">
+        <h2>Diagnostic Results</h2>
+        <p style="color: var(--text-muted); margin-top: 0.25rem;" id="scoreTopicLabel">Here is your performance summary.</p>
+        <div class="card-metrics">
+          <div class="metric-panel">
+            <h3>Final Score</h3>
+            <p id="scoreVal">0/0</p>
+          </div>
+          <div class="metric-panel">
+            <h3>Accuracy</h3>
+            <p id="accuracyVal">0%</p>
+          </div>
+          <div class="metric-panel">
+            <h3>Time Taken</h3>
+            <p id="timeVal">00:00</p>
+          </div>
+        </div>
+        <div style="margin: 1.5rem 0 0.5rem;">
+          <h3 style="font-size: 1rem;">Answer Breakdown</h3>
+        </div>
+        <div class="breakdown-list" id="breakdownList"></div>
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn" onclick="retakeCurrent()">Retake Same Topic</button>
+          <button class="btn btn-outline" onclick="navigateTo('home')">Pick Another Stream</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scoreboard -->
+    <section id="view-scoreboard" class="view">
+      <div class="quiz-card">
+        <h2>Personal Score History</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Tracks sessions completed in this browser (topic-wise).</p>
+        <div id="historyContainer">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">No completed attempts found. Start a quiz to log your score.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="view-about" class="view">
+      <div class="quiz-card">
+        <h2>About Assessment Buddy</h2>
+        <p style="margin-top: 1rem; color: var(--text-muted);">
+          Assessment Buddy provides zero-friction diagnostics for incoming undergraduates. Choose your academic background from the <strong>Specialization</strong> menu — Commerce, Science, Engineering, B.Tech/B.E, or Humanities &amp; other — and take a short topic-specific test before term coursework begins.
+        </p>
+        <p style="margin-top: 1rem; color: var(--text-muted);">
+          Toggle light or dark mode anytime. Scores stay in your browser only.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ========== Theme ==========
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+      try { localStorage.setItem('assessment-buddy-theme', theme); } catch (_) {}
+    }
+
+    // Restore saved theme
+    (function initTheme() {
+      let saved = null;
+      try { saved = localStorage.getItem('assessment-buddy-theme'); } catch (_) {}
+      if (saved === 'dark' || saved === 'light') applyTheme(saved);
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+      else applyTheme('light');
+    })();
+
+    themeToggle.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    // ========== Dropdown ==========
+    const specDropdown = document.getElementById('specDropdown');
+    const specToggle = document.getElementById('specToggle');
+
+    specToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = specDropdown.classList.toggle('open');
+      specToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', () => {
+      specDropdown.classList.remove('open');
+      specToggle.setAttribute('aria-expanded', 'false');
+    });
+    specDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+    // ========== Topics ==========
+    const TOPICS = {
+      commerce: {
+        label: "Commerce",
+        icon: "💼",
+        questions: [
+          {
+            id: "c1", category: "Accounting", icon: "📒",
+            title: "Which of the following is a real account?",
+            options: ["Cash account", "Salary account", "Rent account", "Interest received"],
+            answer: 0
+          },
+          {
+            id: "c2", category: "Business", icon: "📈",
+            title: "What does the acronym SWOT stand for in business analysis?",
+            options: [
+              "Strengths, Weaknesses, Opportunities, Threats",
+              "Sales, Workforce, Operations, Targets",
+              "Strategy, Workplan, Objectives, Timeline",
+              "Systems, Workflow, Output, Turnover"
+            ],
+            answer: 0
+          },
+          {
+            id: "c3", category: "Economics", icon: "💰",
+            title: "If demand rises while supply stays constant, what typically happens to price?",
+            options: ["Price falls", "Price rises", "Price stays the same", "Quantity supplied falls"],
+            answer: 1
+          },
+          {
+            id: "c4", category: "Finance", icon: "🏦",
+            title: "Which document records a company’s assets, liabilities and equity at a point in time?",
+            options: ["Income statement", "Cash flow statement", "Balance sheet", "Trial balance"],
+            answer: 2
+          }
+        ]
+      },
+      science: {
+        label: "Science",
+        icon: "🔬",
+        questions: [
+          {
+            id: "s1", category: "Physics", icon: "⚛️",
+            title: "What is the SI unit of force?",
+            options: ["Joule", "Newton", "Watt", "Pascal"],
+            answer: 1
+          },
+          {
+            id: "s2", category: "Chemistry", icon: "🧪",
+            title: "The atomic number of an element is equal to the number of:",
+            options: ["Neutrons", "Protons", "Electrons + neutrons", "Nucleons only"],
+            answer: 1
+          },
+          {
+            id: "s3", category: "Biology", icon: "🧬",
+            title: "Which organelle is known as the powerhouse of the cell?",
+            options: ["Nucleus", "Ribosome", "Mitochondria", "Golgi apparatus"],
+            answer: 2
+          },
+          {
+            id: "s4", category: "Physics", icon: "🌡️",
+            title: "Which of these is a scalar quantity?",
+            options: ["Velocity", "Force", "Displacement", "Speed"],
+            answer: 3
+          }
+        ]
+      },
+      engineering: {
+        label: "Engineering",
+        icon: "⚙️",
+        questions: [
+          {
+            id: "e1", category: "Mechanics", icon: "🔧",
+            title: "In a simply supported beam, the bending moment at the supports is:",
+            options: ["Maximum", "Zero", "Equal to the load", "Indeterminate"],
+            answer: 1
+          },
+          {
+            id: "e2", category: "Materials", icon: "🧱",
+            title: "Young’s modulus measures a material’s:",
+            options: ["Hardness", "Stiffness (elasticity)", "Toughness", "Density"],
+            answer: 1
+          },
+          {
+            id: "e3", category: "Thermodynamics", icon: "🔥",
+            title: "The first law of thermodynamics is essentially a statement of:",
+            options: ["Conservation of energy", "Conservation of mass", "Entropy increase", "Heat transfer only"],
+            answer: 0
+          },
+          {
+            id: "e4", category: "Electrical", icon: "⚡",
+            title: "Ohm’s law states that V =",
+            options: ["I × R", "I / R", "I + R", "I² × R"],
+            answer: 0
+          }
+        ]
+      },
+      btech: {
+        label: "B.Tech / B.E",
+        icon: "🖥️",
+        questions: [
+          {
+            id: "b1", category: "Programming", icon: "💻",
+            title: "What will the following conditional code block output?",
+            code: `<span class="code-keyword">let</span> x = <span class="code-lit">10</span>;\n<span class="code-keyword">if</span> (x % <span class="code-lit">2</span> === <span class="code-lit">0</span>) {\n  console.<span class="code-fn">log</span>(<span class="code-lit">"Even"</span>);\n} <span class="code-keyword">else</span> {\n  console.<span class="code-fn">log</span>(<span class="code-lit">"Odd"</span>);\n}`,
+            options: ["Even", "Odd", "Undefined", "10"],
+            answer: 0
+          },
+          {
+            id: "b2", category: "Data Structures", icon: "📊",
+            title: "Identify the FIFO (First-In, First-Out) data structure shown:",
+            diagram: [
+              { label: "Item A (Front)" },
+              { label: "Item B" },
+              { label: "Item C (Rear)" }
+            ],
+            options: ["Stack", "Queue", "Binary Tree", "Hash Map"],
+            answer: 1
+          },
+          {
+            id: "b3", category: "Algorithms", icon: "🔍",
+            title: "What is the average time complexity of binary search on a sorted array?",
+            options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+            answer: 1
+          },
+          {
+            id: "b4", category: "Networks", icon: "🌐",
+            title: "Which layer of the OSI model is responsible for end-to-end communication?",
+            options: ["Physical", "Network", "Transport", "Application"],
+            answer: 2
+          }
+        ]
+      },
+      humanities: {
+        label: "Humanities / Other",
+        icon: "📚",
+        questions: [
+          {
+            id: "h1", category: "Academic Writing", icon: "📝",
+            title: "Which citation format correctly indicates an in-text source under standard APA 7 guidelines?",
+            options: ["(Smith, 2021)", "(Smith, page 42)", "[Smith 2021]", "Smith (Year: 2021)"],
+            answer: 0
+          },
+          {
+            id: "h2", category: "Logic", icon: "🧠",
+            title: "If all roses are flowers and some flowers fade quickly, which statement must be true?",
+            options: [
+              "All roses fade quickly",
+              "Some roses may fade quickly",
+              "No roses fade quickly",
+              "All flowers are roses"
+            ],
+            answer: 1
+          },
+          {
+            id: "h3", category: "Design Thinking", icon: "🎨",
+            title: "In design thinking, the stage focused on understanding user needs is called:",
+            options: ["Ideate", "Prototype", "Empathize", "Test"],
+            answer: 2
+          },
+          {
+            id: "h4", category: "Law & Society", icon: "⚖️",
+            title: "The principle that no one is above the law is known as:",
+            options: ["Separation of powers", "Rule of law", "Judicial review", "Federalism"],
+            answer: 1
+          }
+        ]
+      }
+    };
+
+    let currentTopicKey = null;
+    let QUESTION_BANK = [];
+    let quizState = {
+      currentIndex: 0,
+      userAnswers: [],
+      startTime: null,
+      timerInterval: null,
+      elapsedSeconds: 0
+    };
+    let sessionHistory = [];
+
+    // ========== Navigation ==========
+    function navigateTo(viewId) {
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      const activeSection = document.getElementById(`view-${viewId}`);
+      if (activeSection) activeSection.classList.add('active');
+
+      document.querySelectorAll('.nav-item').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${viewId}`);
+      });
+
+      if (viewId !== 'quizzes') {
+        document.querySelectorAll('.dropdown-menu button').forEach(el => el.classList.remove('active'));
+      }
+
+      document.getElementById('navLinks').classList.remove('open');
+      specDropdown.classList.remove('open');
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // ========== Topic selection ==========
+    function selectTopic(topicKey) {
+      if (!TOPICS[topicKey]) return;
+      currentTopicKey = topicKey;
+      QUESTION_BANK = TOPICS[topicKey].questions;
+
+      document.querySelectorAll('.dropdown-menu button').forEach(el => {
+        el.classList.toggle('active', el.dataset.topic === topicKey);
+      });
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      specDropdown.classList.remove('open');
+      document.getElementById('navLinks').classList.remove('open');
+
+      startQuiz();
+    }
+
+    function retakeCurrent() {
+      if (currentTopicKey) selectTopic(currentTopicKey);
+      else navigateTo('home');
+    }
+
+    // ========== Quiz ==========
+    function startQuiz() {
+      if (!QUESTION_BANK.length) {
+        navigateTo('home');
+        return;
+      }
+      clearInterval(quizState.timerInterval);
+      quizState = {
+        currentIndex: 0,
+        userAnswers: [],
+        startTime: Date.now(),
+        timerInterval: null,
+        elapsedSeconds: 0
+      };
+      navigateTo('quizzes');
+      renderQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      const display = document.getElementById('timerDisplay');
+      quizState.timerInterval = setInterval(() => {
+        quizState.elapsedSeconds++;
+        const mins = String(Math.floor(quizState.elapsedSeconds / 60)).padStart(2, '0');
+        const secs = String(quizState.elapsedSeconds % 60).padStart(2, '0');
+        display.textContent = `Time: ${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = QUESTION_BANK[quizState.currentIndex];
+      const total = QUESTION_BANK.length;
+      const topicMeta = TOPICS[currentTopicKey];
+
+      document.getElementById('progressBar').style.width = `${(quizState.currentIndex / total) * 100}%`;
+      document.getElementById('categoryBadge').innerHTML =
+        `<span>${q.icon || topicMeta.icon}</span> <span>${topicMeta.label} · ${q.category}</span>`;
+      document.getElementById('questionText').textContent = `${quizState.currentIndex + 1}. ${q.title}`;
+
+      const visualBox = document.getElementById('visualContainer');
+      visualBox.innerHTML = '';
+      if (q.code) {
+        const pre = document.createElement('pre');
+        pre.className = 'code-block';
+        pre.innerHTML = `<code>${q.code}</code>`;
+        visualBox.appendChild(pre);
+      } else if (q.diagram) {
+        const diagramWrap = document.createElement('div');
+        diagramWrap.className = 'diagram';
+        q.diagram.forEach((step, i) => {
+          const node = document.createElement('div');
+          node.className = 'diag-box';
+          node.textContent = step.label;
+          diagramWrap.appendChild(node);
+          if (i < q.diagram.length - 1) {
+            const arrow = document.createElement('span');
+            arrow.textContent = '→';
+            diagramWrap.appendChild(arrow);
+          }
+        });
+        visualBox.appendChild(diagramWrap);
+      }
+
+      const optionsBox = document.getElementById('optionsContainer');
+      optionsBox.innerHTML = '';
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(index);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      const q = QUESTION_BANK[quizState.currentIndex];
+      const isCorrect = selectedIndex === q.answer;
+
+      quizState.userAnswers.push({
+        questionId: q.id,
+        question: q.title,
+        selected: selectedIndex,
+        correct: q.answer,
+        isCorrect: isCorrect
+      });
+
+      const allButtons = document.querySelectorAll('#optionsContainer .opt-btn');
+      allButtons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) btn.classList.add('correct');
+        else if (idx === selectedIndex) btn.classList.add('incorrect');
+      });
+
+      setTimeout(() => {
+        if (quizState.currentIndex < QUESTION_BANK.length - 1) {
+          quizState.currentIndex++;
+          renderQuestion();
+        } else {
+          finishQuiz();
+        }
+      }, 700);
+    }
+
+    function finishQuiz() {
+      clearInterval(quizState.timerInterval);
+      document.getElementById('progressBar').style.width = '100%';
+
+      const totalQuestions = QUESTION_BANK.length;
+      const correctCount = quizState.userAnswers.filter(a => a.isCorrect).length;
+      const percentage = Math.round((correctCount / totalQuestions) * 100);
+      const mins = String(Math.floor(quizState.elapsedSeconds / 60)).padStart(2, '0');
+      const secs = String(quizState.elapsedSeconds % 60).padStart(2, '0');
+      const timeFormatted = `${mins}:${secs}`;
+      const topicLabel = TOPICS[currentTopicKey]?.label || 'General';
+
+      document.getElementById('scoreVal').textContent = `${correctCount} / ${totalQuestions}`;
+      document.getElementById('accuracyVal').textContent = `${percentage}%`;
+      document.getElementById('timeVal').textContent = timeFormatted;
+      document.getElementById('scoreTopicLabel').textContent = `Performance for ${topicLabel} diagnostic.`;
+
+      const list = document.getElementById('breakdownList');
+      list.innerHTML = '';
+      quizState.userAnswers.forEach((ans, i) => {
+        const item = document.createElement('div');
+        item.className = `breakdown-row ${ans.isCorrect ? 'is-correct' : 'is-wrong'}`;
+        item.innerHTML = `
+          <span><strong>Q${i + 1}:</strong> ${ans.question.substring(0, 52)}${ans.question.length > 52 ? '…' : ''}</span>
+          <span style="font-weight: 600; color: ${ans.isCorrect ? 'var(--success)' : 'var(--danger)'}">
+            ${ans.isCorrect ? 'Correct' : 'Incorrect'}
+          </span>
+        `;
+        list.appendChild(item);
+      });
+
+      sessionHistory.push({
+        topic: topicLabel,
+        score: `${correctCount}/${totalQuestions}`,
+        accuracy: `${percentage}%`,
+        time: timeFormatted,
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      renderHistory();
+      navigateTo('scorecard');
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyContainer');
+      if (sessionHistory.length === 0) return;
+      container.innerHTML = `
+        <div class="breakdown-list">
+          ${sessionHistory.slice().reverse().map((run, i) => `
+            <div class="breakdown-row" style="border-left: 4px solid var(--primary);">
+              <span><strong>${run.topic}</strong> · Run #${sessionHistory.length - i} · ${run.date}</span>
+              <span><strong>${run.score}</strong> (${run.accuracy}) in ${run.time}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
